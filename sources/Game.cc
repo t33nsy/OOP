@@ -4,6 +4,7 @@ Game::Game() : n_(0), flag_(0), field_size_x_(0), field_size_y_(0) {
   ship_manager_ = nullptr;
   field_ = nullptr;
   ship_lens_ = std::vector<int>(0);
+  skill_manager_ = new SkillManager();
 }
 
 auto Game::start() -> void {
@@ -67,33 +68,33 @@ auto Game::start() -> void {
 }
 
 auto Game::play() -> void {
-  field_->ShellingAnimation(hstdout_);
-  field_->PrintField(hstdout_);
-  // while (true) {
-  //   std::cout << "Enter x and y coordinates of ship to fire: (enter <0 <0 to "
-  //                "use skill)\n";
-  //   std::cin >> x_ >> y_;
-  //   if (x_ <= -1 && y_ <= -1) {
-  //     field_->DoVisible();
-  //     field_->PrintField(hstdout_);
-  //     std::cout << "\n\n\t\t\tGAME OVER\n\n";
-  //     break;
-  //   }
-  //   try {
-  //     field_->Attack(x_, y_);
-  //   } catch (OutOfFieldException e) {
-  //     std::cout << e.what() << '\n';
-  //     continue;
-  //   }
-  //   if (ship_manager_->CheckForEnd()) {
-  //     field_->DoVisible();
-  //     field_->PrintField(hstdout_);
-  //     std::cout << "\n\n\t\t\tGAME OVER\n\n";
-  //     break;
-  //   }
-  //   field_->PrintField(hstdout_);
-  // }
-  // ship_manager_->Print();
+  // field_->ShellingAnimation(hstdout_);
+  // field_->PrintField(hstdout_);
+  while (true) {
+    std::cout << "Enter x and y coordinates of ship to fire: (enter <0 <0 to "
+                 "use skill)\n";
+    std::cin >> x_ >> y_;
+    if (x_ <= -1 && y_ <= -1) {
+      field_->DoVisible();
+      field_->PrintField(hstdout_);
+      std::cout << "\n\n\t\t\tGAME OVER\n\n";
+      break;
+    }
+    try {
+      field_->Attack(x_, y_);
+    } catch (OutOfFieldException e) {
+      std::cout << e.what() << '\n';
+      continue;
+    }
+    if (ship_manager_->CheckForEnd()) {
+      field_->DoVisible();
+      field_->PrintField(hstdout_);
+      std::cout << "\n\n\t\t\tGAME OVER\n\n";
+      break;
+    }
+    field_->PrintField(hstdout_);
+  }
+  ship_manager_->Print();
   do {
     Sleep(100);
   } while (!_kbhit());

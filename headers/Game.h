@@ -6,6 +6,7 @@
 #include <random>
 
 #include "ShipManager.h"
+#include "SkillManager.h"
 
 class Game {
  public:
@@ -20,6 +21,7 @@ class Game {
   char flag_;
   ShipManager *ship_manager_;
   GameField *field_;
+  SkillManager *skill_manager_;
 };
 
 #endif
