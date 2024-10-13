@@ -1,8 +1,11 @@
 #ifndef _GAMEFIELD_H_
 #define _GAMEFIELD_H_
 
-#include "OutOfFieldException.h"
+#include <ctime>
+#include <random>
+
 #include "CollisionException.h"
+#include "OutOfFieldException.h"
 #include "Ship.h"
 
 class GameField {
@@ -30,7 +33,8 @@ class GameField {
 
   //* method for adding a ship to the field on given coordinates with given
   // direction (vertical or horizontal)
-  auto AddShip(Ship* ship, const size_t& x, const size_t& y, const bool& vertical) -> void;
+  auto AddShip(Ship* ship, const size_t& x, const size_t& y,
+               const bool& vertical) -> void;
 
   //* method for printing the field to the console
   auto PrintField() -> void;
@@ -55,6 +59,10 @@ class GameField {
 
   //* method for getting field's height
   auto GetHeight() -> size_t;
+
+  auto CheckCell(size_t x, size_t y) -> bool;
+
+  auto ShellingAnimation(HANDLE& hStdOut) -> void;
 
  private:
   size_t size_x_, size_y_;

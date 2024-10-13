@@ -1,20 +1,12 @@
 #include "../headers/Ship.h"
 
 Ship::Ship(int len) {
-  try {
-    SetLength(len);
-  } catch (const char* error) {
-    throw error;
-  }
+  SetLength(len);
   segments_ = std::vector<State>(len, State::INTACT);
 }
 
 Ship::Ship(int len, bool vertical) {
-  try {
-    SetLength(len);
-  } catch (const char* error) {
-    throw error;
-  }
+  SetLength(len);
   SetVertical(vertical);
   segments_ = std::vector<State>(len, State::INTACT);
 }
@@ -22,9 +14,6 @@ Ship::Ship(int len, bool vertical) {
 Ship::~Ship() { segments_.clear(); };
 
 auto Ship::SetLength(int length) -> void {
-  if (length > 4 || length < 1) {
-    throw "Length must be < 4 && > 0";
-  }
   ship_length_ = length;
 }
 

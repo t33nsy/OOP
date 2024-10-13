@@ -200,3 +200,28 @@ auto GameField::DoVisible() -> void {
     }
   }
 }
+
+auto GameField::CheckCell(size_t x, size_t y) -> bool {
+  if (x >= size_x_ || y >= size_y_) throw OutOfFieldException();
+  if (field_[x][y] != EMPTY) return true;
+  if (ship_indices_[x][y].first != nullptr) return true;
+  return false;
+}
+
+auto GameField::ShellingAnimation(HANDLE& hStdOut) -> void {
+  srand(time(nullptr));
+  int x, y;
+  COORD c;
+  for (int i = 0; i < 2 * size_x_ * size_y_; ++i) {
+    x = rand() % size_x_;
+    y = rand() % size_y_;
+    c.X = x * 4 + 4;
+    c.Y = y * 2 + 2;
+    SetConsoleCursorPosition(hStdOut, c);
+    SetConsoleTextAttribute(hStdOut, 10);
+    std::cout << "0";
+    SetConsoleTextAttribute(hStdOut, 7);
+    Sleep(50);
+  }
+  system("cls");
+}

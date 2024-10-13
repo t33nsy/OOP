@@ -2,5 +2,5 @@
 
 class Scanner : public Skill {
  public:
-  void UseSkill() override;
+  void UseSkill(size_t x, size_t y, GameField& field) override;
 };
