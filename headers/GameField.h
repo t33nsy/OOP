@@ -1,6 +1,7 @@
 #ifndef _GAMEFIELD_H_
 #define _GAMEFIELD_H_
 
+#include "OutOfFieldException.h"
 #include "CollisionException.h"
 #include "Ship.h"
 

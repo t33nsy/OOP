@@ -74,8 +74,12 @@ auto ShipManager::InitGameField(GameField& game_field) -> void {
       flag = temp;
       try {
         game_field.AddShip(ships_[i], x, y, flag);
-      } catch (const char* error) {
-        std::cout << error << '\n';
+      } catch (OutOfFieldException e) {
+        std::cout << e.what();
+        --i;
+        continue;
+      } catch (CollisionException e) {
+        std::cout << e.what();
         --i;
         continue;
       }

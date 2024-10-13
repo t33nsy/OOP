@@ -56,10 +56,10 @@ auto GameField::AddShip(Ship* ship, const size_t& x, const size_t& y,
                         const bool& vertical) -> void {
   bool is_x = false, is_y = false;
   if (vertical) {
-    if (y + ship->GetLength() > size_y_) throw "Out of field";
+    if (y + ship->GetLength() > size_y_) throw OutOfFieldException();
     is_y = true;
   } else {
-    if (x + ship->GetLength() > size_x_) throw "Out of field";
+    if (x + ship->GetLength() > size_x_) throw OutOfFieldException();
     is_x = true;
   }
   for (size_t i = 0; i < ship->GetLength(); ++i) {
@@ -77,7 +77,7 @@ auto GameField::AddShip(Ship* ship, const size_t& x, const size_t& y,
 }
 
 auto GameField::PrintField() -> void {
-  if (size_x_ < 1 || size_y_ < 1) throw "Field is empty";
+  if (size_x_ < 1 || size_y_ < 1) return;
   std::cout << "  | ";
   for (size_t i = 0; i < size_x_; ++i) {
     std::cout << char(65 + i) << " | ";
@@ -108,7 +108,7 @@ auto GameField::PrintField() -> void {
 
 auto GameField::PrintField(HANDLE& hStdOut) -> void {
   system("cls");
-  if (size_x_ < 1 || size_y_ < 1) throw "Field is empty";
+  if (size_x_ < 1 || size_y_ < 1) return;
   std::cout << "  | ";
   for (size_t i = 0; i < size_x_; ++i) {
     std::cout << char(65 + i) << " | ";
@@ -156,7 +156,7 @@ auto GameField::PrintField(HANDLE& hStdOut) -> void {
 }
 
 auto GameField::Attack(const size_t& x, const size_t& y) -> void {
-  if (x >= size_x_ || y >= size_y_) throw "Out of field\n";
+  if (x >= size_x_ || y >= size_y_) throw OutOfFieldException();
   if (ship_indices_[x][y].first != nullptr) {
     field_[x][y] = SHIP;
     ship_indices_[x][y].first->Hit(ship_indices_[x][y].second);

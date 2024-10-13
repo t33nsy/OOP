@@ -72,8 +72,8 @@ auto Game::start() -> void {
     }
     try {
       field_.Attack(x_, y_);
-    } catch (const char* error) {
-      std::cout << error << '\n';
+    } catch (OutOfFieldException e) {
+      std::cout << e.what() << '\n';
       continue;
     }
     if (ship_manager_.CheckForEnd()) {
