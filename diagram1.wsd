@@ -1,0 +1,90 @@
+@startuml Lab1
+
+class Ship{
+  -ship_length_:int
+  -vertical_:bool
+  -segments_:std::vector<State>
+  
+  +Ship()
+  +Ship(len: int)
+  +Ship(len: int, vertical: bool)
+  +~Ship()
+  +SetLength(length: int): void
+  +GetLength(): int
+  +SetVertical(vertical: bool): void
+  +GetVertical(): bool
+  +GetSegmentState(index: int): State
+  +Hit(index: size_t): bool
+
+}
+
+class ShipManager {
+  -ships_:std::vector<Ship*>
+  -ship_num_:size_t
+
+  +ShipManager()
+  +ShipManager(ship_num: size_t, ship_lens: std::vector<int>)
+  +~ShipManager()
+  +Print(): void
+  +GetShipNum(): size_t
+  +InitGameField(game_field: GameField &): void
+  +CheckForEnd(): bool
+
+}
+
+class GameField{
+  -size_x_:size_t
+  -size_y_:size_t
+  -field_:std::vector<std::vector<CellState>>
+  -ship_indices_:std::vector<std::pair<Ship*,size_t>>>
+
+  +GameField(size_x: size_t, size_y: size_t)
+  +GameField(other: const GameField&)
+  +operator=(other: const GameField&): GameField&
+  +GameField(other: GameField&&)
+  +operator=(other: GameField&&): GameField&
+  +~GameField()
+  +AddShip(ship: Ship*, x: size_t, y: size_t, vertical: bool): void
+  +PrintField(): void
+  +PrintField(hStdOut: HANDLE&): void
+  +DoLikeItOpponents(): void
+  +DoVisible(): void
+  +Attack(x: size_t, y: size_t): void
+  +CheckForCollision(x: size_t, y: size_t): void
+  +GetWidth(): size_t
+  +GetHeight(): size_t
+
+}
+
+class Game{
+  -ship_lens_:std::vector<int>
+  -hstdout_:HANDLE
+  -x_:int
+  -y_:int
+  -n_:int
+  -flag_:char
+
+  +Game()
+  +Start(): void
+}
+
+enum CellState{
+  UNKNOWN
+  EMPTY
+  SHIP
+}
+
+enum State{
+  KILLED
+  DAMAGED
+  INTACT
+}
+
+State *-- Ship
+Ship --o ShipManager : Contains in vector
+GameField o-- Ship : Contains in vector
+CellState *-- GameField
+Game o-- GameField
+Game o-- ShipManager
+GameField <|-.- ShipManager
+@enduml
