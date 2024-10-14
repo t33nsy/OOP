@@ -50,6 +50,10 @@ auto SkillManager::AddSkill(int num) -> void {
 auto SkillManager::UseOwnedSkill(size_t x, size_t y, GameField& field) -> void {
   if (skills_.empty()) throw NoSkillsException();
   auto skill = skills_.front();
-  skill->UseSkill(x, y, field);
+  try {
+    skill->UseSkill(x, y, field);
+  } catch (OutOfFieldException& e) {
+    throw e;
+  }
   skills_.pop();
 }

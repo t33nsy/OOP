@@ -71,17 +71,34 @@ auto Game::play() -> void {
   // field_->ShellingAnimation(hstdout_);
   // field_->PrintField(hstdout_);
   while (true) {
-    std::cout << "Enter x and y coordinates of ship to fire: (enter <0 <0 to "
-                 "use skill)\n";
+    std::cout << "Enter x and y coordinates of ship to fire: (enter -1 -1 to "
+                 "use skill or -4 -4 to end)\n";
     std::cin >> x_ >> y_;
-    if (x_ <= -1 && y_ <= -1) {
+    bool ship_killed = false;
+    if (x_ == -4 && y_ == -4) {
       field_->DoVisible();
       field_->PrintField(hstdout_);
       std::cout << "\n\n\t\t\tGAME OVER\n\n";
       break;
     }
+    if (x_ == -1 && y_ == -1) {
+      std::cout << "Enter x and y coordinates to use your skill: ";
+      std::cin >> x_ >> y_;
+      try {
+        skill_manager_->UseOwnedSkill(x_, y_, *field_);
+      } catch (NoSkillsException &e) {
+        system("cls");
+        field_->PrintField(hstdout_);
+        std::cout << e.what();
+      } catch (OutOfFieldException &e) {
+        system("cls");
+        field_->PrintField(hstdout_);
+        std::cout << e.what();
+      }
+      continue;
+    }
     try {
-      field_->Attack(x_, y_);
+      ship_killed = field_->Attack(x_, y_, true);
     } catch (OutOfFieldException e) {
       std::cout << e.what() << '\n';
       continue;
@@ -93,6 +110,10 @@ auto Game::play() -> void {
       break;
     }
     field_->PrintField(hstdout_);
+    if (ship_killed) {
+      std::cout << "OH YOU DESTROYED A SHIP, HERE IS YOUR SKILL:\n";
+      skill_manager_->GetRandomSkill();
+    }
   }
   ship_manager_->Print();
   do {

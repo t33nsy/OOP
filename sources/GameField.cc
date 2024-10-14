@@ -155,14 +155,17 @@ auto GameField::PrintField(HANDLE& hStdOut) -> void {
   }
 }
 
-auto GameField::Attack(const size_t& x, const size_t& y) -> void {
+auto GameField::Attack(const size_t& x, const size_t& y,
+                       bool change_state) -> bool {
+  bool ship_killed = false;
   if (x >= size_x_ || y >= size_y_) throw OutOfFieldException();
   if (ship_indices_[x][y].first != nullptr) {
-    field_[x][y] = SHIP;
-    ship_indices_[x][y].first->Hit(ship_indices_[x][y].second);
+    change_state ? field_[x][y] = SHIP : field_[x][y];
+    ship_killed = ship_indices_[x][y].first->Hit(ship_indices_[x][y].second);
   } else {
-    field_[x][y] = EMPTY;
+    change_state ? field_[x][y] = EMPTY : field_[x][y];
   }
+  return ship_killed;
 }
 
 auto GameField::CheckForCollision(const size_t& x, const size_t& y) -> void {
@@ -203,8 +206,10 @@ auto GameField::DoVisible() -> void {
 
 auto GameField::CheckCell(size_t x, size_t y) -> bool {
   if (x >= size_x_ || y >= size_y_) throw OutOfFieldException();
-  if (field_[x][y] != EMPTY) return true;
-  if (ship_indices_[x][y].first != nullptr) return true;
+  if (ship_indices_[x][y].first != nullptr &&
+      ship_indices_[x][y].first->GetSegmentState(ship_indices_[x][y].second) !=
+          Ship::KILLED)
+    return true;
   return false;
 }
 

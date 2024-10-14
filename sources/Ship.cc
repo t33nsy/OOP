@@ -13,15 +13,18 @@ Ship::Ship(int len, bool vertical) {
 
 Ship::~Ship() { segments_.clear(); };
 
-auto Ship::SetLength(int length) -> void {
-  ship_length_ = length;
-}
+auto Ship::SetLength(int length) -> void { ship_length_ = length; }
 
 auto Ship::GetLength() -> int { return ship_length_; }
 
-auto Ship::SetVertical(bool vertical) -> void { vertical_ = vertical; }
+auto Ship::SetVertical(bool vertical) -> void {
+  if (vertical == true) {
+    vertical_ = Orientation::VERTICAL;
+  } else
+    vertical_ = Orientation::HORIZONTAL;
+}
 
-auto Ship::GetVertical() -> bool { return vertical_; }
+auto Ship::GetVertical() -> Orientation { return vertical_; }
 
 auto Ship::GetSegmentState(int index) -> Ship::State {
   return segments_[index];

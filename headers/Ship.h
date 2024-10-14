@@ -11,6 +11,8 @@ class Ship {
   //* enum class with given three states of the ship segment
   enum State { KILLED, DAMAGED, INTACT };
 
+  enum Orientation { HORIZONTAL, VERTICAL };
+
   //* parameterized constructor which gets size of the ship
   explicit Ship(int len);
 
@@ -29,7 +31,7 @@ class Ship {
   //* method for setting orientation of the ship
   auto SetVertical(bool vertical) -> void;
   //* method for getting orientation of the ship
-  auto GetVertical() -> bool;
+  auto GetVertical() -> Orientation;
   //* method for getting segment state of the ship
   auto GetSegmentState(int index) -> State;
 
@@ -38,7 +40,7 @@ class Ship {
 
  private:
   int ship_length_;
-  bool vertical_;
+  Orientation vertical_;
   std::vector<State> segments_;
 };
 

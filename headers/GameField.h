@@ -49,7 +49,7 @@ class GameField {
   auto DoVisible() -> void;
 
   //* method for attacking a ship on given coordinates
-  auto Attack(const size_t& x, const size_t& y) -> void;
+  auto Attack(const size_t& x, const size_t& y, bool change_state) -> bool;
 
   //* method for checking if there is a ship's collision on given coordinates
   auto CheckForCollision(const size_t& x, const size_t& y) -> void;
