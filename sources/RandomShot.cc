@@ -1,9 +1,9 @@
 #include "../headers/RandomShot.h"
 
-auto RandomShot::UseSkill(size_t x, size_t y, GameField& field) -> void {
+auto RandomShot::UseSkill(size_t x, size_t y, GameField& field) -> bool {
   srand(time(NULL));
   size_t x_, y_;
-  bool end = false;
+  bool end = false, is_killed = false;
   for (x_ = rand() % field.GetWidth(), y_ = rand() % field.GetHeight();;) {
     x_ = rand() % field.GetWidth();
     y_ = rand() % field.GetHeight();
@@ -14,5 +14,10 @@ auto RandomShot::UseSkill(size_t x, size_t y, GameField& field) -> void {
     }
     if (end == true) break;
   }
-  field.Attack(x_, y_, false);
+  try {
+    is_killed = field.Attack(x_, y_, false);
+  } catch (ShipKilled& e) {
+    throw e;
+  }
+  return is_killed;
 }

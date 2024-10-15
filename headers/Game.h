@@ -22,6 +22,8 @@ class Game {
   ShipManager *ship_manager_;
   GameField *field_;
   SkillManager *skill_manager_;
+
+  auto RewriteFieldWithMessage_(std::string message) -> void;
 };
 
 #endif

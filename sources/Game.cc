@@ -75,33 +75,73 @@ auto Game::play() -> void {
                  "use skill or -4 -4 to end)\n";
     std::cin >> x_ >> y_;
     bool ship_killed = false;
+    std::string message_for_user = "";
     if (x_ == -4 && y_ == -4) {
       field_->DoVisible();
       field_->PrintField(hstdout_);
       std::cout << "\n\n\t\t\tGAME OVER\n\n";
       break;
-    }
-    if (x_ == -1 && y_ == -1) {
-      std::cout << "Enter x and y coordinates to use your skill: ";
-      std::cin >> x_ >> y_;
+    } else if (x_ == -1 && y_ == -1) {
+      SkillManager::SkillType type;
       try {
-        skill_manager_->UseOwnedSkill(x_, y_, *field_);
+        type = skill_manager_->WhatSkillNow();
       } catch (NoSkillsException &e) {
-        system("cls");
-        field_->PrintField(hstdout_);
         std::cout << e.what();
-      } catch (OutOfFieldException &e) {
-        system("cls");
-        field_->PrintField(hstdout_);
-        std::cout << e.what();
+        continue;
       }
-      continue;
+      bool f = true;
+      switch (type) {
+        case SkillManager::RANDOMSHOT: {
+          std::cout << "Using random shot\n";
+          x_ = 0;
+          y_ = 0;
+          break;
+        }
+        case SkillManager::DOUBLEDAMAGE:
+          std::cout << "Using double damage\n";
+          f = false;
+        case SkillManager::SCANNER: {
+          if (f) std::cout << "Using scanner\n";
+          std::cout << "Enter x and y coordinates to use your skill: \n";
+          std::cin >> x_ >> y_;
+          while (x_ < 0) {
+            std::cout << "X must be >= 0\n";
+            std::cin >> x_;
+          }
+          while (y_ < 0) {
+            std::cout << "Y mush be >= 0\n";
+            std::cin >> y_;
+          }
+          break;
+        }
+      }
+      try {
+        ship_killed = skill_manager_->UseOwnedSkill(x_, y_, *field_);
+      } catch (NoSkillsException &e) {
+        RewriteFieldWithMessage_(std::string(e.what()));
+        continue;
+      } catch (OutOfFieldException &e) {
+        RewriteFieldWithMessage_(std::string(e.what()));
+        continue;
+      } catch (ShipKilled &e) {
+        RewriteFieldWithMessage_(std::string(e.what()));
+        continue;
+      }
+    } else {
+      try {
+        ship_killed = field_->Attack(x_, y_, true);
+      } catch (OutOfFieldException e) {
+        RewriteFieldWithMessage_(std::string(e.what()));
+        continue;
+      } catch (ShipKilled &e) {
+        RewriteFieldWithMessage_(std::string(e.what()));
+        continue;
+      }
+      field_->PrintField(hstdout_);
     }
-    try {
-      ship_killed = field_->Attack(x_, y_, true);
-    } catch (OutOfFieldException e) {
-      std::cout << e.what() << '\n';
-      continue;
+    if (ship_killed) {
+      std::cout << "OH YOU DESTROYED A SHIP, HERE IS YOUR SKILL:\n";
+      skill_manager_->GetRandomSkill();
     }
     if (ship_manager_->CheckForEnd()) {
       field_->DoVisible();
@@ -109,14 +149,14 @@ auto Game::play() -> void {
       std::cout << "\n\n\t\t\tGAME OVER\n\n";
       break;
     }
-    field_->PrintField(hstdout_);
-    if (ship_killed) {
-      std::cout << "OH YOU DESTROYED A SHIP, HERE IS YOUR SKILL:\n";
-      skill_manager_->GetRandomSkill();
-    }
   }
   ship_manager_->Print();
   do {
     Sleep(100);
   } while (!_kbhit());
+}
+
+auto Game::RewriteFieldWithMessage_(std::string message) -> void {
+  field_->PrintField(hstdout_);
+  std::cout << message;
 }

@@ -74,11 +74,11 @@ auto ShipManager::InitGameField(GameField& game_field) -> void {
       flag = temp;
       try {
         game_field.AddShip(ships_[i], x, y, flag);
-      } catch (OutOfFieldException e) {
+      } catch (OutOfFieldException& e) {
         std::cout << e.what();
         --i;
         continue;
-      } catch (CollisionException e) {
+      } catch (CollisionException& e) {
         std::cout << e.what();
         --i;
         continue;
@@ -110,10 +110,7 @@ auto ShipManager::GetShipNum() -> size_t { return ship_num_; }
 
 auto ShipManager::CheckForEnd() -> bool {
   for (size_t i = 0; i < ship_num_; ++i) {
-    for (size_t j = 0; j < ships_[i]->GetLength(); ++j) {
-      std::cout << ships_[i]->GetSegmentState(j);
-      if (ships_[i]->GetSegmentState(j) != Ship::State::KILLED) return false;
-    }
+    if (ships_[i]->CheckKilled() == false) return false;
   }
   return true;
 }

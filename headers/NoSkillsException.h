@@ -4,7 +4,7 @@
 
 class NoSkillsException : public std::exception {
  public:
-  const char* what() const noexcept;
+  const char* what() const noexcept override;
 };
 
 #endif

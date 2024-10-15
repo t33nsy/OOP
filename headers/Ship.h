@@ -1,10 +1,12 @@
 #ifndef _SHIP_H_
 #define _SHIP_H_
 #include <stdint.h>
+#include <windows.h>
 
 #include <iostream>
 #include <vector>
-#include <windows.h>
+
+#include "ShipKilled.h"
 
 class Ship {
  public:
@@ -37,6 +39,8 @@ class Ship {
 
   //* method for hitting the ship's segment
   auto Hit(size_t index) -> bool;
+
+  auto CheckKilled() -> bool;
 
  private:
   int ship_length_;

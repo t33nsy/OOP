@@ -1,10 +1,10 @@
 MAKEFLAGS += -j8
 CC = g++ 
-OBJS = ./objs/main.o ./objs/ship.o ./objs/shipmanager.o ./objs/gamefield.o ./objs/game.o ./objs/skill.o ./objs/doubledamage.o ./objs/scanner.o ./objs/randomshot.o ./objs/skillmanager.o ./objs/outoffield.o ./objs/collision.o ./objs/empty.o
+OBJS = ./objs/main.o ./objs/ship.o ./objs/shipmanager.o ./objs/gamefield.o ./objs/game.o ./objs/skill.o ./objs/doubledamage.o ./objs/scanner.o ./objs/randomshot.o ./objs/skillmanager.o ./objs/outoffield.o ./objs/collision.o ./objs/empty.o ./objs/shipkilled.o
 MAIN_FILES = ./main.cc
 MAIN_HEADERS = ./headers/Game.h
 SHIP_FILES = ./sources/Ship.cc
-SHIP_HEADERS = ./headers/Ship.h
+SHIP_HEADERS = ./headers/Ship.h ./headers/ShipKilled.h
 SHIPMANAGER_FILES = ./sources/ShipManager.cc
 SHIPMANAGER_HEADERS = ./headers/ShipManager.h ./headers/Ship.h ./headers/GameField.h
 GAMEFIELD_FILES = ./sources/GameField.cc
@@ -17,6 +17,8 @@ COLLISION_FILES = ./sources/CollisionException.cc
 COLLISION_HEADERS = ./headers/CollisionException.h
 EMPTY_SKILLS_FILES = ./sources/NoSkillsException.cc
 EMPTY_SKILLS_HEADERS = ./headers/NoSkillsException.h
+SHIP_KILLED_FILES = ./sources/ShipKilled.cc
+SHIP_KILLED_HEADERS = ./headers/ShipKilled.h
 SKILL_FILES = ./sources/Skill.cc
 SKILL_HEADERS = ./headers/Skill.h
 DOUBLE_DAMAGE_FILES = ./sources/DoubleDamage.cc
@@ -72,6 +74,9 @@ main: $(OBJS)
 
 ./objs/empty.o : $(EMPTY_SKILLS_FILES) $(EMPTY_SKILLS_HEADERS)
 	$(CC) -c -g $(EMPTY_SKILLS_FILES) -o ./objs/empty.o
+
+./objs/shipkilled.o: $(SHIP_KILLED_FILES) $(SHIP_KILLED_HEADERS)
+	$(CC) -c -g $(SHIP_KILLED_FILES) -o ./objs/shipkilled.o
 
 clean:
 	-del /f /q objs main.exe

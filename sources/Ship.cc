@@ -31,11 +31,21 @@ auto Ship::GetSegmentState(int index) -> Ship::State {
 }
 
 auto Ship::Hit(size_t index) -> bool {
-  if (segments_[index] == INTACT) {
-    segments_[index] = DAMAGED;
-  } else if (segments_[index] == DAMAGED) {
-    segments_[index] = KILLED;
+  switch (segments_[index]) {
+    case INTACT:
+      segments_[index] = DAMAGED;
+      return false;
+      break;
+    case DAMAGED:
+      segments_[index] = KILLED;
+      break;
+    default:
+      throw ShipKilled();
   }
+  return CheckKilled();
+}
+
+auto Ship::CheckKilled() -> bool {
   for (int i = 0; i < ship_length_; ++i) {
     if (segments_[i] != KILLED) {
       return false;

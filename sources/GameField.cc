@@ -161,7 +161,11 @@ auto GameField::Attack(const size_t& x, const size_t& y,
   if (x >= size_x_ || y >= size_y_) throw OutOfFieldException();
   if (ship_indices_[x][y].first != nullptr) {
     change_state ? field_[x][y] = SHIP : field_[x][y];
-    ship_killed = ship_indices_[x][y].first->Hit(ship_indices_[x][y].second);
+    try {
+      ship_killed = ship_indices_[x][y].first->Hit(ship_indices_[x][y].second);
+    } catch (ShipKilled& e) {
+      throw e;
+    }
   } else {
     change_state ? field_[x][y] = EMPTY : field_[x][y];
   }
