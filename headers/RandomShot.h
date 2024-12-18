@@ -4,7 +4,7 @@
 
 class RandomShot : public Skill {
  public:
-  bool UseSkill(size_t x, size_t y, GameField& field) override;
+  Result UseSkill(size_t x, size_t y, GameField& field) override;
 };
 
 #endif

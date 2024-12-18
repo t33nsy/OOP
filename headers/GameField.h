@@ -13,8 +13,16 @@ class GameField {
   //* enum class with three types of cell state
   enum CellState { UNKNOWN, EMPTY, SHIP };
 
+  struct ShipPlacement {
+    Orientation orient;
+    int index;
+    int x, y;
+  };
+
   //* constructor with arguments of width and height
   GameField(size_t size_x, size_t size_y);
+
+  GameField(std::string serialized);
 
   //* copy constructor
   GameField(const GameField& other);
@@ -33,8 +41,11 @@ class GameField {
 
   //* method for adding a ship to the field on given coordinates with given
   // direction (vertical or horizontal)
-  auto AddShip(Ship* ship, const size_t& x, const size_t& y,
+  auto AddShip(Ship* ship, const int& x, const int& y,
                const bool& vertical) -> void;
+
+  auto AddShip(Ship* ship, const int& x, const int& y,
+               Orientation vertical) -> void;
 
   //* method for printing the field to the console
   auto PrintField() -> void;
@@ -49,9 +60,12 @@ class GameField {
   auto DoVisible() -> void;
 
   //* method for attacking a ship on given coordinates
-  auto Attack(const size_t& x, const size_t& y, bool change_state) -> bool;
+  auto Attack(const size_t& x, const size_t& y, bool change_state) -> Result;
 
-  //* method for checking if there is a ship's collision on given coordinates
+  auto DealDoubleDamage(const size_t& x, const size_t& y) -> Result;
+
+  //* method for checking if there is a ship's collision on given
+  // coordinates
   auto CheckForCollision(const size_t& x, const size_t& y) -> void;
 
   //* method for getting field's width
@@ -60,14 +74,17 @@ class GameField {
   //* method for getting field's height
   auto GetHeight() -> size_t;
 
+  auto ToCharArray(bool isShown)
+      -> std::vector<std::vector<char>>;  // for drawing
+
   auto CheckCell(size_t x, size_t y) -> bool;
 
-  auto ShellingAnimation(HANDLE& hStdOut) -> void;
+  auto Serialize() -> std::string;
 
  private:
   size_t size_x_, size_y_;
   std::vector<std::vector<CellState>> field_;
-  std::vector<std::vector<std::pair<Ship*, size_t>>> ship_indices_;
+  std::vector<std::vector<std::pair<Ship*, int>>> ship_indices_;
 };
 
 #endif

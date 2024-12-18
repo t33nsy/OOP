@@ -1,7 +1,7 @@
 #include "../headers/SkillManager.h"
 
 SkillManager::SkillManager() {
-  srand(time(NULL));
+  // srand(time(NULL));
   std::vector<int> added(3, -1);
   for (int i = 0; i < 3; ++i) {
     switch (i) {
@@ -26,21 +26,32 @@ SkillManager::SkillManager() {
   }
 }
 
+SkillManager::SkillManager(std::queue<SkillManager::SkillType> types) {
+  while (!types.empty()) {
+    AddSkill(types.front());
+    types.pop();
+  }
+}
+
+SkillManager::SkillManager(std::string serialized) {
+  for (auto i : serialized) AddSkill(i - '0');
+}
+
 auto SkillManager::GetRandomSkill() -> void { AddSkill(rand() % 3); }
 
 auto SkillManager::AddSkill(int num) -> void {
   switch (num) {
-    case 0:
+    case DOUBLEDAMAGE:  // enum
       skills_.push(new DoubleDamage());
       types_.push(DOUBLEDAMAGE);
       break;
 
-    case 1:
+    case RANDOMSHOT:
       skills_.push(new RandomShot());
       types_.push(RANDOMSHOT);
       break;
 
-    case 2:
+    case SCANNER:
       skills_.push(new Scanner());
       types_.push(SCANNER);
       break;
@@ -50,12 +61,13 @@ auto SkillManager::AddSkill(int num) -> void {
   }
 }
 
-auto SkillManager::UseOwnedSkill(size_t x, size_t y, GameField& field) -> bool {
+auto SkillManager::UseOwnedSkill(size_t x, size_t y,
+                                 GameField& field) -> Result {
   if (skills_.empty()) throw NoSkillsException();
   auto skill = skills_.front();
-  bool is_killed = false;
+  Result skill_result = Result::MISS;
   try {
-    is_killed = skill->UseSkill(x, y, field);
+    skill_result = skill->UseSkill(x, y, field);
   } catch (OutOfFieldException& e) {
     throw e;
   } catch (ShipKilled& e) {
@@ -63,11 +75,32 @@ auto SkillManager::UseOwnedSkill(size_t x, size_t y, GameField& field) -> bool {
   }
   skills_.pop();
   types_.pop();
-  return is_killed;
+  return skill_result;
 }
 
 auto SkillManager::WhatSkillNow() -> SkillType {
   if (skills_.empty()) throw NoSkillsException();
   auto type = types_.front();
   return type;
+}
+
+auto SkillManager::Serialize() -> std::string {
+  std::string serialized;
+  std::queue<SkillType> tmp;
+  std::queue<Skill*> temp;
+  while (!skills_.empty()) {
+    auto type = types_.front();
+    serialized += std::to_string(type);
+    tmp.push(type);
+    temp.push(skills_.front());
+    skills_.pop();
+    types_.pop();
+  }
+  while (!tmp.empty()) {
+    skills_.push(temp.front());
+    types_.push(tmp.front());
+    temp.pop();
+    tmp.pop();
+  }
+  return serialized;
 }

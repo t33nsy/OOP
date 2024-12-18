@@ -1,0 +1,3 @@
+"C:\Program Files (x86)\CMake\cmake-3.29.1-windows-x86_64\bin\cmake.exe" -E rm -f CMakeFiles\Sea_battle.dir/objects.a
+E:\msys2\ucrt64\bin\ar.exe qc CMakeFiles\Sea_battle.dir/objects.a @CMakeFiles\Sea_battle.dir\objects1.rsp
+E:\msys2\ucrt64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\Sea_battle.dir/objects.a -Wl,--no-whole-archive -o Sea_battle.exe -Wl,--out-implib,libSea_battle.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Sea_battle.dir\linkLibs.rsp

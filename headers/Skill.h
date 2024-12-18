@@ -4,8 +4,7 @@
 
 class Skill {
  public:
-  virtual bool UseSkill(size_t x, size_t y, GameField& field) = 0;
-  virtual ~Skill() = default;
+  virtual Result UseSkill(size_t x, size_t y, GameField& field) = 0;
 };
 
 #endif

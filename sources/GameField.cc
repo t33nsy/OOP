@@ -4,9 +4,28 @@ GameField::GameField(size_t size_x, size_t size_y)
     : size_x_(size_x), size_y_(size_y) {
   field_ = std::vector<std::vector<CellState>>(
       size_x_, std::vector<CellState>(size_y_, EMPTY));
-  ship_indices_ = std::vector<std::vector<std::pair<Ship*, size_t>>>(
-      size_x_, std::vector<std::pair<Ship*, size_t>>(
-                   size_y_, std::make_pair(nullptr, -1)));
+  ship_indices_ = std::vector<std::vector<std::pair<Ship*, int>>>(
+      size_x_,
+      std::vector<std::pair<Ship*, int>>(size_y_, std::make_pair(nullptr, -1)));
+}
+
+GameField::GameField(std::string serialized) {
+  size_x_ = std::stoi(serialized.substr(0, serialized.find('-')));
+  serialized = serialized.substr(serialized.find('-') + 1);
+  size_y_ = std::stoi(serialized.substr(0, serialized.find('-')));
+  serialized = serialized.substr(serialized.find('-') + 1);
+  field_ = std::vector<std::vector<CellState>>(
+      size_x_, std::vector<CellState>(size_y_, EMPTY));
+  for (int i = 0; i < size_x_; ++i) {
+    std::string temp = serialized.substr(0, serialized.find('-'));
+    for (int j = 0; j < size_y_; ++j) {
+      field_[i][j] = static_cast<CellState>(std::stoi(temp.substr(j, 1)));
+    }
+    serialized = serialized.substr(serialized.find('-') + 1);
+  }
+  ship_indices_ = std::vector<std::vector<std::pair<Ship*, int>>>(
+      size_x_,
+      std::vector<std::pair<Ship*, int>>(size_y_, std::make_pair(nullptr, -1)));
 }
 
 GameField::GameField(const GameField& other)
@@ -52,14 +71,14 @@ GameField::~GameField() {
   ship_indices_.clear();
 }
 
-auto GameField::AddShip(Ship* ship, const size_t& x, const size_t& y,
+auto GameField::AddShip(Ship* ship, const int& x, const int& y,
                         const bool& vertical) -> void {
   bool is_x = false, is_y = false;
   if (vertical) {
-    if (y + ship->GetLength() > size_y_) throw OutOfFieldException();
+    if (y + ship->GetLength() > size_y_ || y < 0) throw OutOfFieldException();
     is_y = true;
   } else {
-    if (x + ship->GetLength() > size_x_) throw OutOfFieldException();
+    if (x + ship->GetLength() > size_x_ || x < 0) throw OutOfFieldException();
     is_x = true;
   }
   for (size_t i = 0; i < ship->GetLength(); ++i) {
@@ -70,10 +89,36 @@ auto GameField::AddShip(Ship* ship, const size_t& x, const size_t& y,
     }
   }
   for (size_t i = 0; i < ship->GetLength(); ++i) {
-    field_[x + i * is_x][y + i * is_y] = SHIP;
+    if (field_[x + i * is_x][y + i * is_y] != UNKNOWN)
+      field_[x + i * is_x][y + i * is_y] = SHIP;
     ship_indices_[x + i * is_x][y + i * is_y] = std::make_pair(ship, i);
   }
-  ship->SetVertical(is_y);
+  ship->SetVertical(static_cast<Orientation>(is_y));
+}
+
+auto GameField::AddShip(Ship* ship, const int& x, const int& y,
+                        Orientation vertical) -> void {
+  bool is_x = false, is_y = false;
+  if (vertical == Orientation::VERTICAL) {
+    if (y + ship->GetLength() > size_y_ || y < 0) throw OutOfFieldException();
+    is_y = true;
+  } else {
+    if (x + ship->GetLength() > size_x_ || x < 0) throw OutOfFieldException();
+    is_x = true;
+  }
+  for (size_t i = 0; i < ship->GetLength(); ++i) {
+    try {
+      CheckForCollision(x + i * is_x, y + i * is_y);
+    } catch (CollisionException e()) {
+      throw e;
+    }
+  }
+  for (size_t i = 0; i < ship->GetLength(); ++i) {
+    if (field_[x + i * is_x][y + i * is_y] != UNKNOWN)
+      field_[x + i * is_x][y + i * is_y] = SHIP;
+    ship_indices_[x + i * is_x][y + i * is_y] = std::make_pair(ship, i);
+  }
+  ship->SetVertical(vertical);
 }
 
 auto GameField::PrintField() -> void {
@@ -126,17 +171,17 @@ auto GameField::PrintField(HANDLE& hStdOut) -> void {
       } else if (field_[j][i] == SHIP || ship_indices_[j][i].first != nullptr) {
         switch (ship_indices_[j][i].first->GetSegmentState(
             ship_indices_[j][i].second)) {
-          case Ship::State::INTACT: {
+          case State::INTACT: {
             SetConsoleTextAttribute(hStdOut, 2);
             std::cout << "O";
             break;
           }
-          case Ship::State::DAMAGED: {
+          case State::DAMAGED: {
             SetConsoleTextAttribute(hStdOut, 12);
             std::cout << "O";
             break;
           }
-          case Ship::State::KILLED: {
+          case State::KILLED: {
             SetConsoleTextAttribute(hStdOut, 4);
             std::cout << "X";
             break;
@@ -156,24 +201,43 @@ auto GameField::PrintField(HANDLE& hStdOut) -> void {
 }
 
 auto GameField::Attack(const size_t& x, const size_t& y,
-                       bool change_state) -> bool {
-  bool ship_killed = false;
+                       bool change_state) -> Result {
+  Result attack_result = Result::MISS;
   if (x >= size_x_ || y >= size_y_) throw OutOfFieldException();
   if (ship_indices_[x][y].first != nullptr) {
     change_state ? field_[x][y] = SHIP : field_[x][y];
     try {
-      ship_killed = ship_indices_[x][y].first->Hit(ship_indices_[x][y].second);
+      attack_result =
+          ship_indices_[x][y].first->Hit(ship_indices_[x][y].second);
     } catch (ShipKilled& e) {
       throw e;
     }
   } else {
     change_state ? field_[x][y] = EMPTY : field_[x][y];
   }
-  return ship_killed;
+  return attack_result;
+}
+
+auto GameField::DealDoubleDamage(const size_t& x, const size_t& y) -> Result {
+  Result attack_result = Result::MISS;
+  if (x >= size_x_ || y >= size_y_) throw OutOfFieldException();
+  if (ship_indices_[x][y].first != nullptr) {
+    field_[x][y] = SHIP;
+    try {
+      attack_result = ship_indices_[x][y].first->HitWithDoubleDamage(
+          ship_indices_[x][y].second);
+    } catch (ShipKilled& e) {
+      throw e;
+    }
+  } else {
+    field_[x][y] = EMPTY;
+  }
+  return attack_result;
 }
 
 auto GameField::CheckForCollision(const size_t& x, const size_t& y) -> void {
-  if (field_[x][y] == SHIP) throw CollisionException();
+  if (field_[x][y] == SHIP && ship_indices_[x][y].first != nullptr)
+    throw CollisionException();
   for (auto i : {-1, 0, 1}) {
     for (auto j : {-1, 0, 1}) {
       if (x + i >= 0 && y + j >= 0 && x + i < size_x_ && y + j < size_y_ &&
@@ -212,25 +276,58 @@ auto GameField::CheckCell(size_t x, size_t y) -> bool {
   if (x >= size_x_ || y >= size_y_) throw OutOfFieldException();
   if (ship_indices_[x][y].first != nullptr &&
       ship_indices_[x][y].first->GetSegmentState(ship_indices_[x][y].second) !=
-          Ship::KILLED)
+          KILLED)
     return true;
   return false;
 }
 
-auto GameField::ShellingAnimation(HANDLE& hStdOut) -> void {
-  srand(time(nullptr));
-  int x, y;
-  COORD c;
-  for (int i = 0; i < 2 * size_x_ * size_y_; ++i) {
-    x = rand() % size_x_;
-    y = rand() % size_y_;
-    c.X = x * 4 + 4;
-    c.Y = y * 2 + 2;
-    SetConsoleCursorPosition(hStdOut, c);
-    SetConsoleTextAttribute(hStdOut, 10);
-    std::cout << "0";
-    SetConsoleTextAttribute(hStdOut, 7);
-    Sleep(50);
+auto GameField::ToCharArray(bool isShown) -> std::vector<std::vector<char>> {
+  std::vector<std::vector<char>> result(size_x_, std::vector<char>(size_y_));
+  for (size_t i = 0; i < size_x_; ++i) {
+    for (size_t j = 0; j < size_y_; ++j) {
+      if (field_[i][j] == SHIP) {
+        switch (ship_indices_[i][j].first->GetSegmentState(
+            ship_indices_[i][j].second)) {
+          case State::KILLED:
+            result[i][j] = 'K';
+            break;
+          case State::DAMAGED:
+            if (isShown)
+              result[i][j] = 'X';
+            else
+              result[i][j] = 'O';
+            break;
+          case State::INTACT:
+            if (isShown)
+              result[i][j] = 'O';
+            else
+              result[i][j] = '#';
+            break;
+        }
+      } else if (field_[i][j] == EMPTY) {
+        if (isShown)
+          result[i][j] = ' ';
+        else
+          result[i][j] = 'M';
+      } else {
+        result[i][j] = '#';
+      }
+    }
   }
-  system("cls");
+  return result;
+}  // for drawing
+
+auto GameField::Serialize() -> std::string {
+  std::string result;
+  result += std::to_string(size_x_);
+  result += "-";
+  result += std::to_string(size_y_);
+  result += "-";
+  for (size_t i = 0; i < size_x_; ++i) {
+    for (size_t j = 0; j < size_y_; ++j) {
+      result += std::to_string(field_[i][j]);
+    }
+    result += "-";
+  }
+  return result;
 }

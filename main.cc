@@ -1,8 +1,9 @@
-#include "headers/Game.h"
+#include "headers/GameController.h"
 
 int main() {
+  srand(time(nullptr));
   Game game;
-  game.start();
-  game.play();
+  GameController<TerminalHandler> game_control(game);
+  game_control.Start();
   return 0;
 }

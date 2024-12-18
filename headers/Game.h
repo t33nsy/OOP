@@ -1,29 +1,63 @@
 #ifndef _GAME_H_
 #define _GAME_H_
-#include <conio.h>
 
-#include <ctime>
-#include <random>
-
+#include "ComputerEnemy.h"
+#include "GameField.h"
+#include "GameState.h"
 #include "ShipManager.h"
 #include "SkillManager.h"
+#include "FileHandler.h"
 
 class Game {
  public:
-  Game();
-  auto start() -> void;
-  auto play() -> void;
+  enum TurnType { SKILL, ATTACK };
+
+  Game() = default;
+
+  ~Game();
+
+  auto StartNewGame(int fieldx, int fieldy, int ship_num,
+                    std::vector<int> ship_sizes) -> void;
+
+  auto StartNewGame(int fieldx, int fieldy) -> void;
+
+  auto AddShipOnField(size_t index, int x, int y,
+                      Orientation orientation) -> void;
+
+  auto AddShip(int x, int y, int size, Orientation orientation) -> void;
+
+  auto RandomlyPlaceShips() -> void;
+
+  auto StartNewRound() -> void;
+
+  auto SaveGame(std::string filename) -> void;
+
+  auto LoadGame(std::string filename) -> void;
+
+  auto DoTurn(TurnType type, int x, int y) -> Result;
+
+  auto ComputerTurn(int &x, int &y) -> Result;
+
+  auto Serialize() -> void;
+
+  auto getFieldSizes() -> std::pair<int, int>;
+
+  auto getFieldInChar() -> std::vector<std::vector<char>>;
+
+  auto getOpponentFieldInChar() -> std::vector<std::vector<char>>;
 
  private:
-  std::vector<int> ship_lens_;
-  HANDLE hstdout_;
-  int field_size_x_, field_size_y_, x_, y_, n_;
-  char flag_;
-  ShipManager *ship_manager_;
-  GameField *field_;
-  SkillManager *skill_manager_;
+  auto checkForWin() -> bool;
 
-  auto RewriteFieldWithMessage_(std::string message) -> void;
+  auto checkForLose() -> bool;
+
+  GameField *field_ = nullptr, *opponent_field_ = nullptr;
+  ShipManager *ship_manager_ = nullptr, *opponent_ship_manager_ = nullptr;
+  SkillManager *skill_manager_ = nullptr;
+  GameState state_;
+  ComputerEnemy *enemy_;
+  std::vector<GameField::ShipPlacement> ship_placements_,
+      opponent_ship_placements_;
 };
 
-#endif
+#endif  //_GAME_H_
