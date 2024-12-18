@@ -1,0 +1,122 @@
+[
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\main.cc.obj -c E:\\projects\\training\\OOP\\main.cc",
+  "file": "E:/projects/training/OOP/main.cc",
+  "output": "CMakeFiles/Sea_battle.dir/main.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\CollisionException.cc.obj -c E:\\projects\\training\\OOP\\sources\\CollisionException.cc",
+  "file": "E:/projects/training/OOP/sources/CollisionException.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/CollisionException.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\DoubleDamage.cc.obj -c E:\\projects\\training\\OOP\\sources\\DoubleDamage.cc",
+  "file": "E:/projects/training/OOP/sources/DoubleDamage.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/DoubleDamage.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\GameField.cc.obj -c E:\\projects\\training\\OOP\\sources\\GameField.cc",
+  "file": "E:/projects/training/OOP/sources/GameField.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/GameField.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\NoSkillsException.cc.obj -c E:\\projects\\training\\OOP\\sources\\NoSkillsException.cc",
+  "file": "E:/projects/training/OOP/sources/NoSkillsException.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/NoSkillsException.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\OutOfFieldException.cc.obj -c E:\\projects\\training\\OOP\\sources\\OutOfFieldException.cc",
+  "file": "E:/projects/training/OOP/sources/OutOfFieldException.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/OutOfFieldException.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\RandomShot.cc.obj -c E:\\projects\\training\\OOP\\sources\\RandomShot.cc",
+  "file": "E:/projects/training/OOP/sources/RandomShot.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/RandomShot.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\Scanner.cc.obj -c E:\\projects\\training\\OOP\\sources\\Scanner.cc",
+  "file": "E:/projects/training/OOP/sources/Scanner.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/Scanner.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\Ship.cc.obj -c E:\\projects\\training\\OOP\\sources\\Ship.cc",
+  "file": "E:/projects/training/OOP/sources/Ship.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/Ship.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\ShipKilled.cc.obj -c E:\\projects\\training\\OOP\\sources\\ShipKilled.cc",
+  "file": "E:/projects/training/OOP/sources/ShipKilled.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/ShipKilled.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\ShipManager.cc.obj -c E:\\projects\\training\\OOP\\sources\\ShipManager.cc",
+  "file": "E:/projects/training/OOP/sources/ShipManager.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/ShipManager.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\Skill.cc.obj -c E:\\projects\\training\\OOP\\sources\\Skill.cc",
+  "file": "E:/projects/training/OOP/sources/Skill.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/Skill.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\SkillManager.cc.obj -c E:\\projects\\training\\OOP\\sources\\SkillManager.cc",
+  "file": "E:/projects/training/OOP/sources/SkillManager.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/SkillManager.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\Game.cc.obj -c E:\\projects\\training\\OOP\\sources\\Game.cc",
+  "file": "E:/projects/training/OOP/sources/Game.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/Game.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\GameState.cc.obj -c E:\\projects\\training\\OOP\\sources\\GameState.cc",
+  "file": "E:/projects/training/OOP/sources/GameState.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/GameState.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\ComputerEnemy.cc.obj -c E:\\projects\\training\\OOP\\sources\\ComputerEnemy.cc",
+  "file": "E:/projects/training/OOP/sources/ComputerEnemy.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/ComputerEnemy.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\TerminalInputHandler.cc.obj -c E:\\projects\\training\\OOP\\sources\\TerminalInputHandler.cc",
+  "file": "E:/projects/training/OOP/sources/TerminalInputHandler.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/TerminalInputHandler.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\Tracker.cc.obj -c E:\\projects\\training\\OOP\\sources\\Tracker.cc",
+  "file": "E:/projects/training/OOP/sources/Tracker.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/Tracker.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\TerminalField.cc.obj -c E:\\projects\\training\\OOP\\sources\\TerminalField.cc",
+  "file": "E:/projects/training/OOP/sources/TerminalField.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/TerminalField.cc.obj"
+},
+{
+  "directory": "E:/projects/training/OOP/build",
+  "command": "E:\\msys2\\ucrt64\\bin\\g++.exe   -g -o CMakeFiles\\Sea_battle.dir\\sources\\FileHandler.cc.obj -c E:\\projects\\training\\OOP\\sources\\FileHandler.cc",
+  "file": "E:/projects/training/OOP/sources/FileHandler.cc",
+  "output": "CMakeFiles/Sea_battle.dir/sources/FileHandler.cc.obj"
+}
+]

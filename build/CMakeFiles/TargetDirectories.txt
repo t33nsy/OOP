@@ -1,0 +1,3 @@
+E:/projects/training/OOP/build/CMakeFiles/Sea_battle.dir
+E:/projects/training/OOP/build/CMakeFiles/edit_cache.dir
+E:/projects/training/OOP/build/CMakeFiles/rebuild_cache.dir

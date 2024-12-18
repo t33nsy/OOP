@@ -1,0 +1,146 @@
+@startuml Lab4
+
+class GameController<InputType>{
+  +GameController(game: Game&)
+  +Start(): void
+  
+  -game_: Game&
+  -tracker_: Tracker
+  -save_file_name_: std::string
+}
+
+class GameRenderer<RenderType>{
+  +GameRenderer()
+  +GameRenderer(x: int, y: int)
+  +GameRenderer(x: int, y: int, field: vector<vector<char>>, opponent_field: vector<vector<char>>)
+  +PrintOnlyPlayer(): void
+  +PrintOnlyComp(): void
+  +Print(): void
+  +PrintPlayerTurn(x: int, y: int, result: Result): void
+  +PrintCompTurn(x: int, y: int, result: Result): void
+  +PrintShip(x: int, y: int, size: int, orient: Orientation): void
+  +DeleteShip(x: int, y: int, size: int, orient: Orientation): void
+  +PrintInfo(info: std::string): void
+  +DeleteInfo(): void
+  +FixShip(x: int, y: int, size: int, orient: Orientation): void
+  +DisplayPlayerPosition(int x, int y): void
+  +ResetOpponentField(): void
+  +Reset(): void
+
+  -x_: int 
+  -y_: int
+  -render_: RenderType
+}
+
+enum CommandType {
+  START_GAME
+  SAVE_GAME
+  LOAD_GAME
+  START_ROUND
+  ADD_SHIP
+  QUIT
+  X_DECREASE
+  X_INCREASE
+  Y_DECREASE
+  Y_INCREASE 
+  CHANGE_ORIENTATION
+  ATTACK
+  SKILL
+  SIZE_INCREASE
+  SIZE_DECREASE
+}
+
+class TerminalHandler {
+  +TerminalHandler()
+  +GetCommand(): CommandType
+  +ReadCommands(): void
+
+  -filename_: std::string
+  -default_commands_: std::map<char, CommandType>
+  -commands_: std::map<char, CommandType> 
+  -commands_map_: std::map<std::string, CommandType> 
+  -used_commands_: std::set<CommandType>
+}
+
+class TerminalField {
+  +TerminalField()
+  +TerminalField(x: int, y: int)
+  +TerminalField(x: int, y: int, field: vector<vector<char>>, opponent_field: vector<vector<char>>)
+  +PrintOnlyPlayer(): void
+  +PrintOnlyComp(): void
+  +ResetOpponentField(): void
+  +Reset(): void
+  +Print(): void
+  +ChangeState(x: int, y: int, result: Result): void
+  +ChangeCompState(x: int, y: int, result: Result): void
+  +PrintShip(x: int, y: int, size: int, orient: Orientation): void
+  +DeleteShip(x: int, y: int, size: int, orient: Orientation): void
+  +PrintInfo(info: std::string): void
+  +DeleteInfo(): void
+  +FixShip(x: int, y: int, size: int, orient: Orientation): void
+  +DisplayPlayerPosition(x: int, y: int): void
+  +getXcoord(): short
+  +getYcoord(): short
+
+  -x_: int
+  -y_: int
+  -hstdout_: HANDLE
+  -previous_position_: COORD
+  -player_cells_: vector<vector<char>> 
+  -enemy_cells_: vector<vector<char>>
+}
+
+class Tracker {
+  +Tracker()
+  +TriggerWin(): void
+  +TriggerLose(): void
+  +TriggerBuilding(): void
+  +TriggerGameStart(): void
+  +TriggerRoundStart(): void
+  +TriggerXIncremented(): void
+  +TriggerYIncremented(): void
+  +TriggerXDecremented(): void
+  +TriggerYDecremented(): void
+  +TriggerOrientation(): void
+  +TriggerSizeIncremented(): void
+  +TriggerSizeDecremented(): void
+  +TriggerTurnDone(result: Result): void
+  +TriggerOpponentTurn(result: Result, x: int, y: int): void
+  +TriggerSaveLoaded(x: int, y: int, field: vector<vector<char>>, opponent_field: vector<vector<char>>): void
+  +TriggerShipPlaced(): void
+  +TriggerInfo(info: std::string): void
+  +GetChosenSize(): int
+  +GetChosenOrientation(): Orientation
+  +GetChosenX(): int
+  +GetChosenY(): int
+  +GetFieldWidth(): int
+  +GetFieldHeight(): int
+  +IsFieldBuilt(): bool
+  +IsGameStarted(): bool
+  +IsRoundStarted(): bool
+  +SetFieldSizes(): void
+
+  -field_built_: bool
+  -game_started_: bool
+  -round_started: bool
+  -info_shown_: bool
+  -chosen_x_: int 
+  -chosen_y_: int 
+  -chosen_size_: int 
+  -field_x_: int
+  -field_y_: int
+  -chosen_orientation_: Orientation
+  -turn_result_: Result
+  -renderer_: GameRenderer<TerminalField>
+  -CheckInfo(): void
+}
+
+Tracker o-- GameRenderer
+CommandType --> TerminalHandler
+CommandType --> GameController
+GameController o-- Tracker
+GameController --> TerminalHandler
+GameRenderer --> TerminalField
+TerminalField ---[hidden] CommandType
+TerminalHandler ---[hidden] TerminalField
+@enduml

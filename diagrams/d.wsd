@@ -1,0 +1,72 @@
+@startuml d
+
+class LackOfSpells{
+  +what() const noexcept override: const char*
+}
+
+class CoordinatesOutOfField{
+  +what() const noexcept override: const char*
+}
+
+class IncorrectPlacementOfTheShip {
+  +what() const noexcept override: const char*
+}
+
+class IncorrectAxisDesignation{
+  +what() const noexcept override: const char*
+}
+
+class SpellManager {
+  +SpellManager()
+  +addRandSpell(): void 
+  +getAvailableSpellString(): std::string
+  +getAvailableSpellString(): TypeOfSpell
+  +addSpell(n: int): void
+  +useAvailableSpell() bool
+  +isAvailableSpell(): bool
+
+  -queue_: std::vector<Spell>
+  -types_: std::vector<TypeOfSpell>
+}
+
+interface Spell {
+  +virtual UseSpell(x: int, y: int, field: PlayingField&): bool
+}
+
+class DoubleDamage {
+  +UseSpell(x: int, y: int, field: PlayingField&): override bool
+}
+
+class Shelling {
+  +UseSpell(x: int, y: int, field: PlayingField&): override bool
+}
+
+class Scan {
+  +UseSpell(x: int, y: int, field: PlayingField&): override bool
+}
+
+enum TypeOfSpell {
+  DOUBLEDAMAGE
+  SCAN
+  SHELLING
+}
+
+class exception
+
+SpellManager --o TypeOfSpell
+SpellManager --o Spell
+Spell --|> Scan
+Spell --|> Shelling
+Spell --|> DoubleDamage
+
+LackOfSpells <|-- exception
+CoordinatesOutOfField <|-- exception
+IncorrectPlacementOfTheShip <|-- exception
+IncorrectAxisDesignation <|-- exception
+
+LackOfSpells --[hidden]- CoordinatesOutOfField
+IncorrectAxisDesignation --[hidden] IncorrectPlacementOfTheShip
+
+exception --[hidden]- SpellManager
+
+SpellManager --[hidden]- DoubleDamage

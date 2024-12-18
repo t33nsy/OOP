@@ -1,0 +1,70 @@
+@startuml Lab2
+
+class CollisionException{
+  +what() const noexcept override: const char*
+}
+
+class NoSkillsException{
+  +what() const noexcept override: const char*
+}
+
+class OutOfFieldException {
+  +what() const noexcept override: const char*
+}
+
+class ShipKilled{
+  +what() const noexcept override: const char*
+}
+
+class SkillManager {
+  +SkillManager()
+  +GetRandomSkill(): void 
+  +AddSkill(num: int): void
+  +UseOwnedSkill(x: size_t, y: size_t, field: GameField&): bool
+  +WhatSkillNow(): SkillType
+
+  -skills_: std::queue<Skill*>
+  -types_: std::queue<SkillType>
+}
+
+interface Skill {
+  +virtual UseSkill(x: size_t, y: size_t, field: GameField&): bool
+}
+
+class DoubleDamage {
+  +UseSkill(x: size_t, y: size_t, field: GameField&) override: bool
+}
+
+class RandomShot {
+  +UseSkill(x: size_t, y: size_t, field: GameField&) override: bool
+}
+
+class Scanner {
+  +UseSkill(x: size_t, y: size_t, field: GameField&) override: bool
+}
+
+enum SkillType {
+  DOUBLEDAMAGE
+  RANDOMSHOT
+  SCANNER
+}
+
+class exception
+
+SkillManager --o SkillType
+SkillManager --o Skill
+Skill --|> Scanner
+Skill --|> RandomShot
+Skill --|> DoubleDamage
+
+NoSkillsException <|-- exception
+OutOfFieldException <|-- exception
+CollisionException <|-- exception
+ShipKilled <|-- exception
+
+CollisionException --[hidden]- ShipKilled
+NoSkillsException --[hidden] OutOfFieldException
+
+exception --[hidden]- SkillManager
+
+SkillManager --[hidden]- DoubleDamage

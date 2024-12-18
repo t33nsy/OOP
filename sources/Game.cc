@@ -1,91 +1,198 @@
 #include "../headers/Game.h"
 
-Game::Game() {}
+Game::~Game() {
+  if (field_ != nullptr) delete field_;
+  if (ship_manager_ != nullptr) ship_manager_;
+  if (skill_manager_ != nullptr) skill_manager_;
+  if (opponent_field_ != nullptr) delete opponent_field_;
+  if (opponent_ship_manager_ != nullptr) delete opponent_ship_manager_;
+}
 
-auto Game::start() -> void {
-  hstdout_ = GetStdHandle(STD_OUTPUT_HANDLE);
-  std::cout << "Enter num of ships: ";
-  std::cin >> n_;
-  if (n_ <= 0) {
-    while (n_ <= 0) {
-      std::cout << "Num of ships must be >0, please rewrite: ";
-      std::cin >> n_;
-    }
+auto Game::StartNewGame(int fieldx, int fieldy, int ship_num,
+                        std::vector<int> ship_sizes) -> void {
+  field_ = new GameField(fieldx, fieldy);
+  ship_manager_ = new ShipManager(ship_num, ship_sizes);
+  skill_manager_ = new SkillManager();
+  if (ship_placements_.size() > 0) ship_placements_.clear();
+}
+
+auto Game::StartNewGame(int fieldx, int fieldy) -> void {
+  field_ = new GameField(fieldx, fieldy);
+  ship_manager_ = new ShipManager();
+  skill_manager_ = new SkillManager();
+  if (ship_placements_.size() > 0) ship_placements_.clear();
+}
+
+auto Game::AddShip(int x, int y, int size, Orientation orientation) -> void {
+  try {
+    ship_manager_->AddShipToGameField(*field_, x, y, orientation, size);
+  } catch (OutOfFieldException &e) {
+    throw e;
+  } catch (CollisionException &e) {
+    throw e;
   }
-  ship_lens_ = std::vector<int>(n_);
-  std::cout << "Write r if you want to do random ship sizes: ";
-  std::cin >> flag_;
-  if (flag_ == 'r') {
-    srand(time(0));
-    for (int i = 0; i < n_; ++i) {
-      ship_lens_[i] = rand() % 4 + 1;
-    }
-  } else {
-    std::cout << "Enter ship lengths: (len must be > 0 and < 5)\n";
-    for (int i = 0; i < n_; ++i) {
-      int temp;
-      std::cin >> temp;
-      while (temp <= 0 || temp >= 5) {
-        std::cout << "Ship length must be > 0 and < 5, please rewrite: ";
-        std::cin >> temp;
-      }
-      ship_lens_[i] = temp;
-    }
+  ship_placements_.push_back(GameField::ShipPlacement{
+      orientation, (int)ship_placements_.size(), x, y});
+}
+
+auto Game::AddShipOnField(size_t index, int x, int y,
+                          Orientation orientation) -> void {
+  try {
+    ship_manager_->InitGameField(*field_, x, y, orientation, index);
+  } catch (OutOfFieldException &e) {
+    throw e;
+  } catch (CollisionException &e) {
+    throw e;
   }
-  ShipManager ship_manager_(n_, ship_lens_);
-  system("cls");
-  std::cout << "Enter width and height of field: ";
-  std::cin >> field_size_x_ >> field_size_y_;
-  if (field_size_x_ <= 0) {
-    while (field_size_x_ <= 0) {
-      std::cout << "Width must be > 0, please rewrite: ";
-      std::cin >> field_size_x_;
-    }
+  ship_placements_.push_back(
+      GameField::ShipPlacement{orientation, (int)index, x, y});
+}
+
+auto Game::RandomlyPlaceShips() -> void {
+  ship_placements_ = ship_manager_->RandomlyInitGameField(*field_);
+}
+
+auto Game::StartNewRound() -> void {
+  enemy_ = new ComputerEnemy();
+  opponent_field_ = new GameField(field_->GetWidth(), field_->GetHeight());
+  opponent_ship_manager_ = new ShipManager(ship_manager_->GetShipNum(),
+                                           ship_manager_->GetShipSizes());
+  opponent_ship_placements_ =
+      opponent_ship_manager_->RandomlyInitGameField(*opponent_field_);
+  opponent_field_->DoLikeItOpponents();
+  Serialize();
+}
+
+auto Game::checkForWin() -> bool {
+  return opponent_ship_manager_->CheckForEnd();
+}
+
+auto Game::checkForLose() -> bool { return ship_manager_->CheckForEnd(); }
+
+auto Game::SaveGame(std::string filename) -> void {
+  Serialize();
+  FileHandler fh(filename, FileType::WRITE);
+  // std::ofstream out(filename, std::ios_base::binary);  // RAII output stream
+  try {
+    fh.WriteState(state_);
+  } catch (const char *e) {
+    throw e;
   }
-  if (field_size_y_ <= 0) {
-    while (field_size_y_ <= 0) {
-      std::cout << "Height must be > 0, please rewrite: ";
-      std::cin >> field_size_y_;
-    }
+  // if (out.is_open())
+  //   out << state_;
+  // else
+  //   throw "Failed to save game, something with file";
+}
+
+auto Game::LoadGame(std::string filename) -> void {
+  // std::ifstream in(filename, std::ios_base::binary);  // RAII input stream
+  // if (!in.is_open()) throw "Failed to load game, something with file";
+  // in >> state_;
+  FileHandler fh(filename, FileType::READ);
+  try {
+    fh.ReadState(state_);
+  } catch (const char *e) {
+    throw e;
   }
-  system("cls");
-  GameField field_(field_size_x_, field_size_y_);
-  ship_manager_.InitGameField(field_);
-  field_.PrintField(hstdout_);
-  std::cout
-      << "Do you want to do field look like opponent's? Y - yes, N - no\n";
-  std::cin >> flag_;
-  if (flag_ == 'Y' || flag_ == 'y') {
-    field_.DoLikeItOpponents();
-    field_.PrintField(hstdout_);
-  } else
-    field_.PrintField(hstdout_);
-  while (true) {
-    std::cout << "Enter x and y coordinates of ship to fire: (enter <0 <0 to "
-                 "end attack)\n";
-    std::cin >> x_ >> y_;
-    if (x_ <= -1 && y_ <= -1) {
-      field_.DoVisible();
-      field_.PrintField(hstdout_);
-      std::cout << "\n\n\t\t\tGAME OVER\n\n";
-      break;
-    }
+  ShipManager *temp_ship_manager, *temp_opp_manager;
+  GameField *temp_game_field, *temp_opp_field;
+  SkillManager *temp_skill_manager;
+  try {
+    temp_ship_manager = new ShipManager(
+        state_.GetSerializedManager(GameState::PlayerType::Player));
+    temp_game_field = new GameField(
+        state_.GetSerializedGameField(GameState::PlayerType::Player));
+    ship_placements_ = state_.GetShipPlacement(GameState::PlayerType::Player);
+    temp_skill_manager = new SkillManager(state_.GetSerializedSkillManager());
+    temp_opp_manager = new ShipManager(
+        state_.GetSerializedManager(GameState::PlayerType::Computer));
+    temp_opp_field = new GameField(
+        state_.GetSerializedGameField(GameState::PlayerType::Computer));
+    opponent_ship_placements_ =
+        state_.GetShipPlacement(GameState::PlayerType::Computer);
+    enemy_ = new ComputerEnemy();
+  } catch (...) {
+    throw "Failed to load game";
+  }
+  ship_manager_ = temp_ship_manager;
+  opponent_ship_manager_ = temp_opp_manager;
+  field_ = temp_game_field;
+  opponent_field_ = temp_opp_field;
+  skill_manager_ = temp_skill_manager;
+  for (auto i : ship_placements_) {
     try {
-      field_.Attack(x_, y_);
-    } catch (const char* error) {
-      std::cout << error << '\n';
-      continue;
+      ship_manager_->InitGameField(*field_, i.x, i.y, i.orient, i.index);
+    } catch (...) {
+      throw "Failed to load game";
     }
-    if (ship_manager_.CheckForEnd()) {
-      field_.DoVisible();
-      field_.PrintField(hstdout_);
-      std::cout << "\n\n\t\t\tGAME OVER\n\n";
-      break;
-    }
-    field_.PrintField(hstdout_);
   }
-  ship_manager_.Print();
-  do {
-    Sleep(100);
-  } while (!_kbhit());
+  for (auto i : opponent_ship_placements_) {
+    try {
+      opponent_ship_manager_->InitGameField(*opponent_field_, i.x, i.y,
+                                            i.orient, i.index);
+    } catch (...) {
+      throw "Failed to load game";
+    }
+  }
+}
+
+auto Game::DoTurn(TurnType type, int x, int y) -> Result {
+  Result result;
+  try {
+    if (type == TurnType::ATTACK) {
+      result = opponent_field_->Attack(x, y, 1);
+    } else if (type == TurnType::SKILL) {
+      result = skill_manager_->UseOwnedSkill(x, y, *opponent_field_);
+    }
+  } catch (OutOfFieldException &e) {
+    throw e;
+  } catch (NoSkillsException &e) {
+    throw e;
+  } catch (ShipKilled &e) {
+    throw e;
+  }
+  if (result == Result::FULL_DESTROYED) {
+    skill_manager_->GetRandomSkill();
+  }
+  if (checkForWin()) {
+    return Result::WIN;
+  }
+  return result;
+}
+
+auto Game::ComputerTurn(int &x, int &y) -> Result {
+  Result result = enemy_->DoAttack(*field_, x, y);
+  Serialize();
+  if (checkForLose()) {
+    return Result::LOSE;
+  }
+  return result;
+}
+
+auto Game::Serialize() -> void {
+  state_.SetSerializedGameField(field_->Serialize(),
+                                GameState::PlayerType::Player);
+  state_.SetSerializedManager(ship_manager_->Serialize(),
+                              GameState::PlayerType::Player);
+  state_.SetSerializedShipPlacement(ship_placements_,
+                                    GameState::PlayerType::Player);
+  state_.SetSerializedGameField(opponent_field_->Serialize(),
+                                GameState::PlayerType::Computer);
+  state_.SetSerializedManager(opponent_ship_manager_->Serialize(),
+                              GameState::PlayerType::Computer);
+  state_.SetSerializedShipPlacement(opponent_ship_placements_,
+                                    GameState::PlayerType::Computer);
+  state_.SetSerializedSkillManager(skill_manager_->Serialize());
+}
+
+auto Game::getFieldSizes() -> std::pair<int, int> {
+  return std::make_pair(field_->GetWidth(), field_->GetHeight());
+}
+
+auto Game::getFieldInChar() -> std::vector<std::vector<char>> {
+  return field_->ToCharArray(true);
+}
+
+auto Game::getOpponentFieldInChar() -> std::vector<std::vector<char>> {
+  return opponent_field_->ToCharArray(false);
 }

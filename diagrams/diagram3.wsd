@@ -1,0 +1,97 @@
+@startuml Lab3
+
+enum TurnType { 
+  SKILL 
+  ATTACK 
+}
+
+class Game {
+  +Game()
+  +~Game()
+  +StartNewGame(fieldx: int, fieldy: int, ship_num: int, ship_sizes: std::vector<int>): void
+  +StartNewGame(fieldx: int, fieldy: int): void
+  +AddShipOnField(index: size_t, x: int, y: int, orientation: Orientation) : void
+  +AddShip(x: int, y: int, size: int, orientation: Orientation): void
+  +RandomlyPlaceShips(): void
+  +StartNewRound(): void
+  +SaveGame(filename: std::string): void
+  +LoadGame(filename: std::string): void
+  +DoTurn(type: TurnType, x: int, y: int): Result
+  +ComputerTurn(x: int&, y: int&): Result
+  +Serialize(): void
+  +getFieldSizes(): std::pair<int, int>
+  +getFieldInChar(): std::vector<std::vector<char>>
+  +getOpponentFieldInChar(): std::vector<std::vector<char>>
+  +checkForWin(): bool
+  +checkForLose(): bool
+
+  -field_, opponent_field_: GameField*
+  -ship_manager_, opponent_ship_manager_: ShipManager*
+  -skill_manager_: SkillManager*
+  -state_: GameState
+  -enemy_: ComputerEnemy*
+  -ship_placements_, opponent_ship_placements_: std::vector<ShipPlacement> 
+}
+
+
+enum PlayerType { 
+  Player 
+  Computer
+}
+
+class GameState {
+
+  +friend operator<<(out: std::ostream&, state: const GameState& ): std::ostream&
+  +friend operator>>(in: std::istream& , state: GameState&): std::istream&
+  +SetSerializedManager(serialized_manager: std::string , who: PlayerType): void
+  +SetSerializedGameField(serialized_game_field: std::string, who: PlayerType): void
+  +SetSerializedShipPlacement(ship_placement: std::vector<ShipPlacement>, who: PlayerType): void
+  +SetSerializedSkillManager(serialized_skill_manager: std::string): void
+  +GetSerializedGameField(who: PlayerType) const: std::string
+  +GetSerializedManager(who: PlayerType) const: std::string
+  +GetShipPlacement(who: PlayerType) const: vector<ShipPlacement>
+  +GetSerializedSkillManager() const: std::string
+  +crypt(str: std::string) const: std::string
+
+  -serialized_ship_manager_, serialized_opponent_ship_manager_: std::string
+  -serialized_ship_placement_, serialized_opponent_ship_placement_: std::string
+  -serialized_game_field_, serialized_opponent_game_field_: std::string
+  -serialized_skill_manager_: std::string
+  -game_key_ = "GAME": std::string
+}
+
+class ComputerEnemy {
+  +ComputerEnemy()
+  +ComputerEnemy(sleep_time: int)
+  +DoAttack(field: GameField&, xcoord: int&, ycoord: int&): Result
+  +clear(): void
+  +queue_clear(): void
+
+  -attack_queue_: std::queue<std::pair<int, int>> 
+  -sleep_time_ = 100: int
+  -prev_destroy_ = {-2, -2}: std::pair<int, int> 
+  -done_: std::map<std::pair<int, int>, int> 
+}
+
+enum FileType { 
+  READ
+  WRITE 
+}
+
+class FileHandler {
+  +FileHandler(filename: std::string, type: FileType)
+  +~FileHandler()
+  +ReadState(GameState &state): void
+  +WriteState(GameState &state): void
+  +GetLine(): std::string
+
+  -input_: std::ifstream
+  -output_: std::ofstream
+}
+
+PlayerType --- GameState
+TurnType --- Game
+GameState --o Game
+ComputerEnemy --o Game
+Game --- FileHandler
+FileHandler --- FileType
